@@ -1,10 +1,41 @@
 import fetchFavoritesMovies from '../api/fetchFavoritesMovies';
 
+import Pagination from 'tui-pagination';
+import 'tui-pagination/dist/tui-pagination.css';
+
 import refs from '../ollRefs/refs';
 
 import arrayGenres from './arrayGenres';
 
 import preloader from './preloader';
+
+const container = document.querySelector('.tui-pagination');
+
+let pagination = new Pagination(
+  container, {
+  totalItems: 0,
+    page: '1',
+  }
+);
+const page = pagination.getCurrentPage();
+
+fetchFavoritesMovies(page).then(movies => {
+  renderFavoritesMovies(movies)
+  pagination.reset(movies.total_results);
+ 
+})
+
+pagination.on('afterMove', eventFavoritePagination);
+ 
+function eventFavoritePagination(event) {
+    console.log(event.page);
+    fetchFavoritesMovies(event.page).then(movies => {
+      resetFavoritesMovies();
+      renderFavoritesMovies(movies);
+      console.log(movies.results);
+    }
+    )
+  }
 
 function getGenres(arrayId) {
   const arr = [];
@@ -45,27 +76,40 @@ export function renderGallery(movies) {
     .join('');
 }
 
-fetchFavoritesMovies().then(data => {
-  preloader();
-  refs.gallery.insertAdjacentHTML('beforeend', renderGallery(data.results));
-});
+function renderFavoritesMovies(movies) {
+  
+  refs.gallery.insertAdjacentHTML('beforeend', renderGallery(movies.results));
+  
+};
 
-function returnToHome(e) {
-  e.preventDefault();
-
-  if (refs.home.classList.contains('active')) {
-    return;
-  }
-
-  refs.home.classList.add('active');
-  refs.library.classList.remove('active');
-
-  fetchFavoritesMovies().then(data => {
-    preloader();
-
-    refs.gallery.innerHTML = '';
-    refs.gallery.insertAdjacentHTML('beforeend', renderGallery(data.results));
-  });
+// fetchFavoritesMovies().then(data => {
+//   preloader();
+//   refs.gallery.insertAdjacentHTML('beforeend', renderGallery(data.results));
+  
+// });
+function resetFavoritesMovies() {
+  refs.gallery.innerHTML = '';
 }
 
-refs.home.addEventListener('click', returnToHome);
+
+
+// function returnToHome(e) {
+//   e.preventDefault();
+
+//   if (refs.home.classList.contains('active')) {
+//     return;
+//   }
+
+//   refs.home.classList.add('active');
+//   refs.library.classList.remove('active');
+
+//   fetchFavoritesMovies().then(data => {
+//     preloader();
+
+//     refs.gallery.innerHTML = '';
+//     refs.gallery.insertAdjacentHTML('beforeend', renderGallery(data.results));
+//   });
+// }
+
+// refs.home.addEventListener('click', returnToHome);
+

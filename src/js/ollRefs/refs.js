@@ -5,5 +5,6 @@ const refs = {
   navigate: document.querySelector('.navigate__list'),
   searchForm: document.querySelector('.form__search'),
   searchHelper: document.querySelector('.search-helper'),
-};
+
+  };
 export default refs;
