@@ -3,8 +3,38 @@ import arrayGenres from './arrayGenres';
 import getWatchesFilms from '../db/getWatchesFilms';
 import fetchSearchMovies from '../api/fetchSearchMovies';
 import fetchFavoritesMovies from '../api/fetchFavoritesMovies';
+import Pagination from 'tui-pagination';
+import 'tui-pagination/dist/tui-pagination.css';
 import preloader from './preloader';
 import Notiflix from 'notiflix';
+
+const container = document.querySelector('.tui-pagination');
+
+let pagination = new Pagination(
+  container, {
+  totalItems: 0,
+    page: '1',
+  }
+);
+const page = pagination.getCurrentPage();
+
+fetchFavoritesMovies(page).then(movies => {
+  renderFavoritesMovies(movies)
+  pagination.reset(movies.total_pages);
+ 
+})
+
+pagination.on('afterMove', eventFavoritePagination);
+ 
+function eventFavoritePagination(event) {
+    console.log(event.page);
+    fetchFavoritesMovies(event.page).then(movies => {
+      resetFavoritesMovies();
+      renderFavoritesMovies(movies);
+      console.log(movies.results);
+    }
+    )
+  }
 
 function getGenres(arrayId) {
   const arr = [];
@@ -53,6 +83,17 @@ function renderGalleryLibrary(movies) {
     .join('');
 }
 
+// function renderFavoritesMovies(movies) {
+  
+//   refs.gallery.insertAdjacentHTML('beforeend', renderGalleryLibrary(movies.results));
+  
+// };
+
+// function resetFavoritesMovies() {
+//   refs.gallery.innerHTML = '';
+// };
+
+
 function onFetchLibrary(e) {
   e.preventDefault();
 
@@ -70,8 +111,7 @@ function onFetchLibrary(e) {
     }
     const movies = Object.values(data);
     preloader();
-
-    refs.gallery.innerHTML = '';
+        refs.gallery.innerHTML = '';
     refs.gallery.insertAdjacentHTML('beforeend', renderGalleryLibrary(movies));
   });
 }

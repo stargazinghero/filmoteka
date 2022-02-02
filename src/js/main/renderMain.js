@@ -21,7 +21,7 @@ const page = pagination.getCurrentPage();
 
 fetchFavoritesMovies(page).then(movies => {
   renderFavoritesMovies(movies)
-  pagination.reset(movies.total_results);
+  pagination.reset(movies.total_pages);
  
 })
 
@@ -93,23 +93,22 @@ function resetFavoritesMovies() {
 
 
 
-// function returnToHome(e) {
-//   e.preventDefault();
+function returnToHome(e) {
+  e.preventDefault();
 
-//   if (refs.home.classList.contains('active')) {
-//     return;
-//   }
+  if (refs.home.classList.contains('active')) {
+    return;
+  }
 
-//   refs.home.classList.add('active');
-//   refs.library.classList.remove('active');
+  refs.home.classList.add('active');
+  refs.library.classList.remove('active');
+ 
+  fetchFavoritesMovies(page).then(movies => {
+    preloader();
+    refs.gallery.innerHTML = '';
+        refs.gallery.insertAdjacentHTML('beforeend', renderGallery(movies.results));
+  });
+}
 
-//   fetchFavoritesMovies().then(data => {
-//     preloader();
-
-//     refs.gallery.innerHTML = '';
-//     refs.gallery.insertAdjacentHTML('beforeend', renderGallery(data.results));
-//   });
-// }
-
-// refs.home.addEventListener('click', returnToHome);
+refs.home.addEventListener('click', returnToHome);
 
